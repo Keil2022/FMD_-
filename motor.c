@@ -33,7 +33,7 @@ void Backward(void)	//ºóÍË
     INB = 1;
 }
 
-void Stop(void)	//Í£Ö¹
+void STOP(void)	//Í£Ö¹
 {
 	INA = 0;
     INB = 0;

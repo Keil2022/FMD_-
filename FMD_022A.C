@@ -110,7 +110,7 @@ int main(void)
     {
 		T0IE = 1;  	//開定時器0中斷
 		GIE = 1;   	//總中斷
-		ClrWdt(); //清看门狗
+		ClrWdt(); 		//清看门狗
         
 		if(Per1ms)
         {

@@ -13,16 +13,19 @@
 
 #define KEY_Press 	0
 #define KEY_Lift 		1
-#define	True			1
-#define	Fault			0
 
-#define KEY_ShortTime		5	//50ms
-#define KEY_LongTime		70	//700ms
-#define KEY_EndTime		300	//3s
-#define Inching_SetTime	5
+#define	True				1
+#define	Fault				0
 
-#define Back_Off_BrakeTime		1
-#define Back_Off_BackwardTime	(Back_Off_BrakeTime+1)
+#define KEY_ShortTime		5		//短按判断时间
+#define KEY_LongTime		70	//长按判断时间
+#define KEY_EndTime		300	//结束按键时间
+
+#define Inching_SetTime	50	//点动工作时间
+#define Inching_IntTime	50	//点动间隔时间
+
+#define Back_Off_BrakeTime		20
+#define Back_Off_BackwardTime	20
 
 bit KEY1_ShortOK;		//短按有效
 bit KEY1_LongOK;			//长按有效
@@ -49,6 +52,8 @@ u8 KEY4_Phase;
 u16 KEY4_TimeCount;
 
 bit MODE = 0; 	//0-点动模式； 1-连动模式
+bit Con_M = 0;	//0关闭连续点动；1打开连续点动；MODE=1有效
+
 u8 Inching_Time = 0;
 u8 Back_Off = 0;
 
@@ -196,11 +201,12 @@ void Key_Scanf(void)
             if(MODE)	Forward();
             else
             {
-                if(Inching_Time)
-                {
-                    Forward();
-                    if(Inching_Time > 0) Inching_Time--;
-                }
+                if(Inching_Time < 255)			Inching_Time++;
+				if(Inching_Time <= Inching_SetTime)	Forward();
+                else		Stop();
+                
+				if(Con_M)
+					if(Inching_Time > (Inching_SetTime + Inching_IntTime))	Inching_Time = 0;
             }
             
 			Back_Off = 0;
@@ -210,13 +216,12 @@ void Key_Scanf(void)
 	else
 	{
 		KEY4_TimeCount = 0;
-        Inching_Time = Inching_SetTime;
-        //Brake();
-        //Stop();
-//		if(Back_Off < 255)	Back_Off++;
-//		if(Back_Off <= Back_Off_BrakeTime)					Brake();
-//        else if(Back_Off <= Back_Off_BackwardTime)		Backward();
-//        else 	Stop();
+        Inching_Time = 0;
+ 
+		if(Back_Off < 255)	Back_Off++;
+		if(Back_Off <= Back_Off_BrakeTime)					Brake();
+        else if(Back_Off <= (Back_Off_BrakeTime + Back_Off_BackwardTime))		Backward();
+        else 	STOP();
 	}    
 }
 
@@ -235,7 +240,7 @@ void Key_Handle(void)
     {
 		KEY2_ShortOK = Fault;
         
-		
+		Con_M ^= 1;
 	}
     else {/*do nothing*/}
     
