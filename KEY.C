@@ -21,10 +21,10 @@
 #define KEY_EndTime		300	//结束按键时间
 
 #define Inching_SetTime	50	//点动工作时间
-#define Inching_IntTime	(Inching_SetTime+50)	//点动间隔时间
+#define Inching_IntTime	50	//点动间隔时间
 
 #define Back_Off_BrakeTime		20
-#define Back_Off_BackwardTime	(Back_Off_BrakeTime+20)
+#define Back_Off_BackwardTime	20
 
 bit KEY1_ShortOK;		//短按有效
 bit KEY1_LongOK;			//长按有效
@@ -200,12 +200,12 @@ void Key_Scanf(void)
             if(MODE)	Forward();
             else
             {
-                if(Inching_Time < 255) Inching_Time++;
+                if(Inching_Time < 255)			Inching_Time++;
 				if(Inching_Time <= Inching_SetTime)	Forward();
                 else		Stop();
                 
 				if(Con_M)
-					if(Inching_Time > Inching_IntTime)	Inching_Time = 0;
+					if(Inching_Time > (Inching_SetTime + Inching_IntTime))	Inching_Time = 0;
             }
             
 			Back_Off = 0;
@@ -219,7 +219,7 @@ void Key_Scanf(void)
  
 		if(Back_Off < 255)	Back_Off++;
 		if(Back_Off <= Back_Off_BrakeTime)					Brake();
-        else if(Back_Off <= Back_Off_BackwardTime)		Backward();
+        else if(Back_Off <= (Back_Off_BrakeTime + Back_Off_BackwardTime))		Backward();
         else 	Stop();
 	}    
 }
