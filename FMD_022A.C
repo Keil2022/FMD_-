@@ -100,7 +100,9 @@ int main(void)
     Key_Init();
     LED_Init();
     MOTOR_Init();
-    
+
+	LED = MODE;
+
 	//开中断
 	T0IE = 1;  	//开定时器0中断
 	GIE = 1;   	//开总中断

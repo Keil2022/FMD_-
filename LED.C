@@ -7,7 +7,7 @@
 void LED_Init(void)
 {
 	TRISC4 = 0;	//PC4Êä³öÄ£Ê½
-    LED = 1;
+    LED = 0;
 }
 
 #endif

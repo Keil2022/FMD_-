@@ -17,7 +17,7 @@
 #define	True				1
 #define	Fault				0
 
-#define KEY_ShortTime		5		//短按判断时间
+#define KEY_ShortTime		2		//短按判断时间
 #define KEY_LongTime		70	//长按判断时间
 #define KEY_EndTime		300	//结束按键时间
 
@@ -51,11 +51,11 @@ bit KEY4_EndOK;
 u8 KEY4_Phase;
 u16 KEY4_TimeCount;
 
-bit MODE = 0; 	//0-点动模式； 1-连动模式
-bit Con_M = 0;	//0关闭连续点动；1打开连续点动；MODE=1有效
+bit MODE; 	//0-点动模式； 1-连动模式
+bit Con_M;	//0关闭连续点动；1打开连续点动；MODE=1有效
 
 u8 Inching_Time = 0;
-u8 Back_Off = 0;
+u8 Back_Off = 255;
 
 void Key_Init(void)
 {
@@ -76,6 +76,9 @@ void Key_Init(void)
     
 	KEY4_Phase = 0;
     KEY4_TimeCount = 0;
+    
+	MODE = 1;
+    Con_M = 0;
 }
 
 void Key1_Scanf(void)
@@ -181,6 +184,7 @@ void Key_Scanf(void)
 		if(KEY3_TimeCount >=  KEY_LongTime)
 		{
 			//KEY2_Phase = 1;	//注释掉为 不跳转长按功能
+            Backward();
 		}
         else {/*do nothing*/}
 	}
@@ -203,7 +207,7 @@ void Key_Scanf(void)
             {
                 if(Inching_Time < 255)			Inching_Time++;
 				if(Inching_Time <= Inching_SetTime)	Forward();
-                else		Stop();
+                else	STOP();
                 
 				if(Con_M)
 					if(Inching_Time > (Inching_SetTime + Inching_IntTime))	Inching_Time = 0;
@@ -221,7 +225,10 @@ void Key_Scanf(void)
 		if(Back_Off < 255)	Back_Off++;
 		if(Back_Off <= Back_Off_BrakeTime)					Brake();
         else if(Back_Off <= (Back_Off_BrakeTime + Back_Off_BackwardTime))		Backward();
-        else 	STOP();
+        else
+        {
+            if(KEY3 != KEY_Press)	STOP();
+		}
 	}    
 }
 
